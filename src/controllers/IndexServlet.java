@@ -38,21 +38,23 @@ public class IndexServlet extends HttpServlet {
         int page = 1;
         try {
             page = Integer.parseInt(request.getParameter("page"));
-        }catch(NumberFormatException e) {}
-        
+        } catch(NumberFormatException e) {}
+
+        // 最大件数と開始位置を指定してメッセージを取得
         List<Message> messages = em.createNamedQuery("getAllMessages", Message.class)
-                                    .setFirstResult(15 * (page - 1))
-                                    .setMaxResults(15)
-                                    .getResultList();
-        
-        long message_count = (long)em.createNamedQuery("getMessageCount", long.class)
-                                        .getSingleResult();
-        
+                                   .setFirstResult(15 * (page - 1))
+                                   .setMaxResults(15)
+                                   .getResultList();
+
+        // 全件数を取得
+        long messages_count = (long)em.createNamedQuery("getMessagesCount", Long.class)
+                                      .getSingleResult();
+
         em.close();
-        
+
         request.setAttribute("messages", messages);
-        request.setAttribute("message_count", message_count);
-        request.setAttribute("page", page);
+        request.setAttribute("messages_count", messages_count);     // 全件数
+        request.setAttribute("page", page); 
         
         if(request.getSession().getAttribute("flush") != null) {
             request.setAttribute("flush", request.getSession().getAttribute("flush"));
